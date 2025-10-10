@@ -5,42 +5,40 @@ if ('serviceWorker' in navigator) {
       reg = await navigator.serviceWorker.register('/sw.js', { type: "module" });
 
       console.log('Service worker registrada! 😎', reg);
-      postNews();
+      postCountry();
     } catch (err) {
       console.log('😥 Service worker registro falhou: ', err);
     }
   });
 }
 
-let param = 'AI'
-const apiKey = '4abf7d67ddef4ae3817c6f0f72c44afa';
-let url = `https://newsapi.org/v2/everything?q=${param}&apiKey=${apiKey}`;
+let param = 'africa'
+let url = `https://restcountries.com/v3.1/name/${param}`;
 const main = document.querySelector('main');
 
 
 
-async function postNews() {
+async function postCountry() {
   const res = await fetch(url);
   const data = await res.json();
   console.log(url)
-  main.innerHTML = data.articles.map(createArticle).join('\n');
+  main.innerHTML = data.map(createCountry).join('\n');
 }
 
-function createArticle(article) {
+function createCountry(country) {
   return `
-           <div class="article">
-                <a href="${article.url}" target="_blank">
-                    <img src="${article.urlToImage}" 
-                      class="image" alt="${article.content}"/>
-                    <h2>${article.title}</h2>
-                    <p>${article.description}</p>
-                </a>
-           </div>
-    `
+    <div class="article">
+      <h2>${country.name.common}</h2>
+      <img src="${country.flags.png}" class="image" alt="Bandeira de ${country.name.common}" />
+      <p><strong>Capital:</strong> ${country.capital ? country.capital[0] : 'N/A'}</p>
+      <p><strong>População:</strong> ${country.population.toLocaleString()}</p>
+      <p><strong>Região:</strong> ${country.region}</p>
+    </div>
+  `
 }
 
 function buscar() {
   param = document.getElementById("input").value;
-  url = `https://newsapi.org/v2/everything?q=${param}&apiKey=${apiKey}`;
-  postNews()
+  url = `https://restcountries.com/v3.1/name/${param}`;
+  postCountry()
 }
